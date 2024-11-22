@@ -154,7 +154,7 @@ const PodcastUploadPage = () => {
 
   const fetchFiles = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/projects/${projectId}/files`);
+      const response = await fetch(`https://quesa-backend.onrender.com/api/projects/${projectId}/files`);
       if (response.ok) {
         const data = await response.json();
         setFiles(data);
@@ -180,7 +180,7 @@ const closeFileViewer = () => {
     setMessage('');
 
     try {
-      const response = await fetch(`http://localhost:5000/api/projects/${projectId}/files`, {
+      const response = await fetch(`https://quesa-backend.onrender.com/api/projects/${projectId}/files`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -209,7 +209,7 @@ const closeFileViewer = () => {
     if (!window.confirm('Are you sure you want to delete this file?')) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/files/${fileId}`, { method: 'DELETE' });
+      const response = await fetch(`https://quesa-backend.onrender.com/api/files/${fileId}`, { method: 'DELETE' });
       if (response.ok) {
         setFiles((prevFiles) => prevFiles.filter((file) => file._id !== fileId));
       } else {

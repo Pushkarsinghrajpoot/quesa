@@ -12,7 +12,7 @@ const DynamicUploadDialog = ({ open, onClose, clickedButton, projectId }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`/api/projects/${projectId}/files`, formData);
+      const response = await axios.post(`https://quesa-backend.onrender.com/api/projects/${projectId}/files`, formData);
       console.log('File uploaded:', response.data);
       onClose(); // Close the dialog on successful upload
     } catch (error) {

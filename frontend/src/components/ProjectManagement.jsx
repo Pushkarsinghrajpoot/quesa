@@ -19,7 +19,7 @@ const ProjectManagement = () => {
 
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:5000/api/projects/${projectId}/files`);
+        const response = await axios.get(`https://quesa-backend.onrender.com/api/projects/${projectId}/files`);
         setFiles(response.data);
       } catch (error) {
         console.error('Error fetching files:', error);
@@ -42,7 +42,7 @@ const ProjectManagement = () => {
     }
 
     try {
-      await axios.delete(`http://localhost:5000/api/files/${fileId}`);
+      await axios.delete(`https://quesa-backend.onrender.com/api/files/${fileId}`);
       setFiles(files.filter((file) => file._id !== fileId));
     } catch (error) {
       console.error('Error deleting file:', error);

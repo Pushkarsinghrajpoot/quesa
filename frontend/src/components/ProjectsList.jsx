@@ -21,7 +21,7 @@ const ProjectsList = () => {
       }
 
       try {
-        const response = await fetch(`http://localhost:5000/api/projects?userId=${userId}`);
+        const response = await fetch(`https://quesa-backend.onrender.com/api/projects?userId=${userId}`);
         if (!response.ok) {
           const errorResponse = await response.json();
           throw new Error(errorResponse.error || 'Failed to fetch projects');
@@ -56,7 +56,7 @@ const ProjectsList = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/projects', {
+      const response = await fetch('https://quesa-backend.onrender.com/api/projects', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

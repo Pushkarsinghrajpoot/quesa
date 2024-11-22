@@ -24,7 +24,7 @@ const CreateProjectModal = () => {
 
     try {
       // Make the POST request to create a new project
-      const response = await axios.post("http://localhost:5000/api/projects", projectData);
+      const response = await axios.post("https://quesa-backend.onrender.com/api/projects", projectData);
 
       // On successful creation, redirect to the projects list or another page
       console.log(response.data);

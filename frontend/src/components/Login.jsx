@@ -15,7 +15,7 @@ const Login = () => {
       setError(""); // Reset error message
   
       try {
-        const response = await axios.post("https://quesa-backend.onrender.com/users", { username });
+        const response = await axios.post("https://quesa-backend.onrender.com/api/users", { username });
         const userId = response.data._id;
 
         // Save userId to localStorage
