@@ -106,7 +106,7 @@ const Dashboard = () => {
           }}
         >
           <img
-            src="src/assets/dashboard_image.jpg"
+            src="public/dashboard_image.jpg"
             alt="Team collaboration illustration"
             style={{
               width: "100%",
