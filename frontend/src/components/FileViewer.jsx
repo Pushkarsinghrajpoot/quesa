@@ -1,119 +1,156 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-const FileViewer = () => {
-  // Mock file data
-  const files = [
-    { id: 1, name: "File1.txt", transcript: "This is the transcript for File 1" },
-    { id: 2, name: "File2.txt", transcript: "This is the transcript for File 2" },
-  ];
+const FileViewer = ({ fileId, onClose }) => {
+  const [file, setFile] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTranscript, setEditedTranscript] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const projectId = localStorage.getItem('projectId');
 
-  const [selectedFile, setSelectedFile] = useState(null); // Stores the file being viewed
-  const [isEditing, setIsEditing] = useState(false); // Controls edit mode
-  const [editableText, setEditableText] = useState(""); // Stores the editable text
+  useEffect(() => {
+    const fetchFile = async () => {
+      try {
+        const response = await axios.get(`https://quesa-backend.onrender.com/api/files/${fileId}`);
+        setFile(response.data);
+        setEditedTranscript(response.data.transcript);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to fetch file');
+        setLoading(false);
+      }
+    };
 
-  const handleViewFile = (file) => {
-    setSelectedFile(file);
-    setEditableText(file.transcript); // Initialize editable text with the file's transcript
-    setIsEditing(false); // Exit edit mode when viewing a file
-  };
+    fetchFile();
+  }, [fileId]);
 
-  const handleEdit = () => {
-    setIsEditing(true); // Enable edit mode
-  };
-
-  const handleSave = () => {
-    if (selectedFile) {
-      // Update the selected file's transcript
-      setSelectedFile({ ...selectedFile, transcript: editableText });
-      setIsEditing(false); // Exit edit mode
+  const handleSave = async () => {
+    try {
+      await axios.put(`https://quesa-backend.onrender.com/api/files/${fileId}`, {
+        transcript: editedTranscript
+      });
+      navigate(`/podcast/${projectId}`);
+    } catch (err) {
+      setError('Failed to save changes');
     }
   };
 
+  const handleDiscard = () => {
+    navigate(`/podcast/${projectId}`);
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+
   return (
-    <div>
-      {/* List of files */}
-      <h3>Files</h3>
-      <ul>
-        {files.map((file) => (
-          <li key={file.id}>
-            {file.name}
+    <div style={{
+      position: 'fixed',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      backgroundColor: 'white',
+      padding: '24px',
+      borderRadius: '12px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      width: '80%',
+      maxWidth: '1000px',
+      maxHeight: '80vh',
+      overflow: 'auto'
+    }}>
+      {/* Header */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '20px',
+        position: 'sticky',
+        top: 0,
+        backgroundColor: 'white',
+        padding: '10px 0',
+        borderBottom: '1px solid #eee'
+      }}>
+        <h2 style={{ margin: 0 }}>{file.name}</h2>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          {!isEditing ? (
             <button
-              onClick={() => handleViewFile(file)}
+              onClick={() => setIsEditing(true)}
               style={{
-                marginLeft: "10px",
-                padding: "5px 10px",
-                cursor: "pointer",
-                border: "1px solid #000",
-                backgroundColor: "#f0f0f0",
+                padding: '8px 16px',
+                backgroundColor: '#8B5CF6',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer'
               }}
             >
-              View
+              Edit
             </button>
-          </li>
-        ))}
-      </ul>
-
-      {/* File viewer box */}
-      {selectedFile && (
-        <div
-          style={{
-            marginTop: "20px",
-            padding: "20px",
-            border: "1px solid #000",
-            borderRadius: "5px",
-            width: "300px",
-          }}
-        >
-          {/* File name */}
-          <h4
-            style={{
-              margin: "0 0 10px 0",
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
-            {selectedFile.name}
-            <button
-              onClick={isEditing ? handleSave : handleEdit}
-              style={{
-                padding: "5px 10px",
-                cursor: "pointer",
-                border: "1px solid #000",
-                backgroundColor: isEditing ? "#4CAF50" : "#f0f0f0",
-                color: isEditing ? "#fff" : "#000",
-              }}
-            >
-              {isEditing ? "Save" : "Edit"}
-            </button>
-          </h4>
-
-          {/* Transcript */}
-          {isEditing ? (
-            <textarea
-              value={editableText}
-              onChange={(e) => setEditableText(e.target.value)}
-              style={{
-                width: "100%",
-                height: "100px",
-                border: "1px solid #000",
-                padding: "10px",
-                fontSize: "14px",
-              }}
-            />
           ) : (
-            <p
-              style={{
-                fontSize: "14px",
-                lineHeight: "1.5",
-              }}
-            >
-              {selectedFile.transcript}
-            </p>
+            <>
+              <button
+                onClick={handleDiscard}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#EF4444',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer'
+                }}
+              >
+                Discard
+              </button>
+              <button
+                onClick={handleSave}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#10B981',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer'
+                }}
+              >
+                Save
+              </button>
+            </>
           )}
+        </div>
+      </div>
+
+      {/* Content */}
+      {isEditing ? (
+        <textarea
+          value={editedTranscript}
+          onChange={(e) => setEditedTranscript(e.target.value)}
+          style={{
+            width: '100%',
+            minHeight: '400px',
+            padding: '12px',
+            borderRadius: '6px',
+            border: '1px solid #ddd',
+            fontSize: '16px',
+            lineHeight: '1.5',
+            resize: 'vertical'
+          }}
+        />
+      ) : (
+        <div style={{
+          padding: '12px',
+          backgroundColor: '#f9fafb',
+          borderRadius: '6px',
+          fontSize: '16px',
+          lineHeight: '1.5',
+          whiteSpace: 'pre-wrap'
+        }}>
+          {file.transcript}
         </div>
       )}
     </div>
   );
 };
 
-export default FileViewer;
+export default FileViewer; 

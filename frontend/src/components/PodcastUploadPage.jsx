@@ -1,8 +1,9 @@
 import React, { useState,useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import FileViewer from './FileViewer';
 
 const PodcastUploadPage = () => {
+    const navigate = useNavigate();
     const location = useLocation();
     const projectName = location.state?.projectName || 'Sample Project';
     const [activeDialog, setActiveDialog] = useState(null); // To manage active dialog box
@@ -220,6 +221,10 @@ const closeFileViewer = () => {
     }
   };
 
+  const handleProjectNameClick = () => {
+    navigate('/projects-list');
+  };
+
   return (
     <div style={{ display: 'flex', height: '100vh', flexDirection: 'column' }}>
       <nav style={styles.nav}>
@@ -228,7 +233,29 @@ const closeFileViewer = () => {
           <span>Ques.AI</span>
         </a>
         <span style={{ color: '#666', margin: '0 10px' }}>/</span>
-        <span style={{ color: '#666' }}>{projectName}</span>
+        <span 
+          onClick={() => navigate('/projects-list')}
+          style={{ 
+            color: '#666', 
+            cursor: 'pointer',
+            transition: 'color 0.3s',
+            '&:hover': { color: '#8833FF' },
+            textDecoration: 'none',
+            padding: '4px 8px',
+            borderRadius: '4px',
+            display: 'inline-block'
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.color = '#8833FF';
+            e.target.style.textDecoration = 'underline';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.color = '#666';
+            e.target.style.textDecoration = 'none';
+          }}
+        >
+          {projectName}
+        </span>
         <span style={{ color: '#666', margin: '0 10px' }}>/</span>
         <span style={{ color: '#8833FF' }}>Add your podcast</span>
       </nav>
