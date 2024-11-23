@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import FileViewer from './FileViewer';
 
 const ProjectManagement = () => {
   const  projectId  = localStorage.getItem("projectId")
@@ -8,6 +9,7 @@ const ProjectManagement = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [selectedFileId, setSelectedFileId] = useState(null);
 
   useEffect(() => {
     const fetchFiles = async () => {
@@ -33,7 +35,8 @@ const ProjectManagement = () => {
   }, [projectId]);
 
   const viewFile = (fileId) => {
-    navigate(`/files/${fileId}`);
+    console.log('Viewing file with ID:', fileId);
+    setSelectedFileId(fileId);
   };
 
   const deleteFile = async (fileId) => {
@@ -199,6 +202,23 @@ const ProjectManagement = () => {
           )}
         </div>
       </div>
+
+      {selectedFileId && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          zIndex: 1000
+        }}>
+          <FileViewer 
+            fileId={selectedFileId} 
+            onClose={() => setSelectedFileId(null)}
+          />
+        </div>
+      )}
     </div>
   );
 };
