@@ -35,7 +35,7 @@ const CreateProjectModal = ({ onClose, onProjectCreated, fromProjectList = false
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/api/projects", {
+      const response = await axios.post("https://quesa-backend.onrender.com/api/projects", {
         name: projectName.trim(),
         userId: userId,
       });

@@ -21,7 +21,7 @@ const FileViewer = ({ fileId, onClose }) => {
 
       try {
         console.log('Fetching file with ID:', fileId);
-        const response = await axios.get(`http://localhost:5000/api/project/files/${fileId}`);
+        const response = await axios.get(`https://quesa-backend.onrender.com/api/project/files/${fileId}`);
         console.log('File data received:', response.data);
         setFile(response.data);
         setEditedTranscript(response.data.transcript);
@@ -38,7 +38,7 @@ const FileViewer = ({ fileId, onClose }) => {
 
   const handleSave = async () => {
     try {
-      await axios.put(`http://localhost:5000/api/project/files/${fileId}`, {
+      await axios.put(`https://quesa-backend.onrender.com/api/project/files/${fileId}`, {
         transcript: editedTranscript
       });
       // Update the local file state
