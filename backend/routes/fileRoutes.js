@@ -36,7 +36,7 @@ router.post('/:projectId/files', async (req, res) => {
 // Fetch a specific file's details
 router.get('/files/:fileId', async (req, res) => {
   const { fileId } = req.params;
-  console.log('fileId' , fileId)
+
   try {
     const file = await File.findById(fileId);
     if (!file) {
@@ -50,17 +50,15 @@ router.get('/files/:fileId', async (req, res) => {
 
 // Update a file transcript
 router.put('/files/:fileId', async (req, res) => {
-    
   const { fileId } = req.params;
   const { transcript } = req.body;
-  console.log("fileId" , fileId)
+
   try {
     const file = await File.findByIdAndUpdate(
       fileId,
       { transcript, updatedAt: Date.now() },
       { new: true }
     );
-    console.log(fileId)
     if (!file) {
       return res.status(404).json({ error: 'File not found' });
     }

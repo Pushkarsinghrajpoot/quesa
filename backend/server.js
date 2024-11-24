@@ -1,3 +1,6 @@
+
+
+
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -6,6 +9,7 @@ const cors = require('cors');
 const userRoutes = require('./routes/userRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const fileRoutes = require('./routes/fileRoutes');
+
 
 dotenv.config();
 
@@ -30,7 +34,8 @@ mongoose
 app.use('/api/users', userRoutes);
 
 app.use('/api/projects', projectRoutes);
-app.use('/api/projects', fileRoutes);
+app.use('/api/project', fileRoutes);
+
 
 
 // Start server

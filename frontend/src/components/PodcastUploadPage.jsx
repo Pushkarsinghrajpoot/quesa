@@ -1,12 +1,12 @@
 import React, { useState,useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import FileViewer from './FileViewer';
+import DynamicUploadDialog from './DynamicUploadDialog';
 
 const PodcastUploadPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const projectName = location.state?.projectName || 'Sample Project';
-    const [activeDialog, setActiveDialog] = useState(null); // To manage active dialog box
     const [hoveredCard, setHoveredCard] = useState(null);
     const [dropzoneHovered, setDropzoneHovered] = useState(false);
     const [error, setError] = useState(null);
@@ -17,6 +17,8 @@ const PodcastUploadPage = () => {
     const [loading , setLoading] = useState(false)
     const [currentFile, setCurrentFile] = useState(null)
     const [showFileViewer, setShowFileViewer] = useState(false)
+    const [showUploadDialog, setShowUploadDialog] = useState(false);
+    const [selectedUploadType, setSelectedUploadType] = useState('');
 
 
     const userId = localStorage.getItem('userId');
@@ -138,11 +140,14 @@ const PodcastUploadPage = () => {
   };
 
   const openDialog = (type) => {
-    setActiveDialog(type);
+    setSelectedUploadType(type);
+    setShowUploadDialog(true);
   };
 
   const closeDialog = () => {
-    setActiveDialog(null);
+    setShowUploadDialog(false);
+    setSelectedUploadType('');
+    fetchFiles();
   };
 
   const handleInputChange = (e) => {
@@ -210,7 +215,7 @@ const closeFileViewer = () => {
     if (!window.confirm('Are you sure you want to delete this file?')) return;
 
     try {
-      const response = await fetch(`https://quesa-backend.onrender.com/api/files/${fileId}`, { method: 'DELETE' });
+      const response = await fetch(`https://quesa-backend.onrender.com/api/project/files/${fileId}`, { method: 'DELETE' });
       if (response.ok) {
         setFiles((prevFiles) => prevFiles.filter((file) => file._id !== fileId));
       } else {
@@ -314,6 +319,7 @@ const closeFileViewer = () => {
             }}
             onDragEnter={() => setDropzoneHovered(true)}
             onDragLeave={() => setDropzoneHovered(false)}
+            onClick={() => openDialog('Upload Files')}
           >
             <div style={{ color: '#8833FF', fontSize: '40px', marginBottom: '10px' }}>☁️</div>
             <div style={{ marginBottom: '10px' }}>Select a file or drag and drop here (Podcast Media or Transcription Text)</div>
@@ -332,7 +338,7 @@ const closeFileViewer = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
             <h2>Your Files</h2>
             <button
-              onClick={() => setActiveDialog(true)}
+              onClick={() => openDialog('Upload Files')}
               style={{
                 padding: '8px 16px',
                 backgroundColor: '#8B5CF6',
@@ -404,61 +410,21 @@ const closeFileViewer = () => {
         
       ) }
 
+            <DynamicUploadDialog
+                open={showUploadDialog}
+                onClose={closeDialog}
+                clickedButton={selectedUploadType}
+                projectId={projectId}
+            />
+
             {showFileViewer && (
-                <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '20px', boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)', zIndex: 1000 }}>
-                    <h2>View File</h2>
-                    <FileViewer file={currentFile} />
-                    <button onClick={closeFileViewer}>Close</button>
-                </div>
+                <FileViewer
+                    fileId={currentFile._id}
+                    onClose={closeFileViewer}
+                />
             )}
         </main>
       </div>
-
-      {activeDialog && (
-        <>
-          <>
-          <div style={styles.overlay} onClick={closeDialog}></div>
-          <div style={styles.dialog}>
-            <h2>{activeDialog} Dialog</h2>
-            <form onSubmit={handleSubmit}>
-              <div style={styles.formGroup}>
-                <label style={styles.label} htmlFor="name">
-                  Name
-                </label>
-                <input
-                  style={styles.input}
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div style={styles.formGroup}>
-                <label style={styles.label} htmlFor="transcript">
-                  Transcript
-                </label>
-                <textarea
-                  style={styles.textarea}
-                  id="transcript"
-                  name="transcript"
-                  value={formData.transcript}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <button type="submit" style={styles.button}>
-                Submit
-              </button>
-              <button type="button" onClick={closeDialog} style={{ ...styles.button, marginLeft: '10px' }}>
-                Cancel
-              </button>
-            </form>
-          </div>
-        </>
-        </>
-      )}
     </div>
   );
 };

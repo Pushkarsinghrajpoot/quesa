@@ -3,6 +3,8 @@ import axios from 'axios';
 
 const DynamicUploadDialog = ({ open, onClose, clickedButton, projectId }) => {
   const [formData, setFormData] = useState({ name: '', transcript: '' });
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -11,12 +13,31 @@ const DynamicUploadDialog = ({ open, onClose, clickedButton, projectId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+    setLoading(true);
+
     try {
-      const response = await axios.post(`https://quesa-backend.onrender.com/api/projects/${projectId}/files`, formData);
+      const response = await axios.post(
+        `https://quesa-backend.onrender.com/api/projects/${projectId}/files`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
       console.log('File uploaded:', response.data);
-      onClose(); // Close the dialog on successful upload
+      setFormData({ name: '', transcript: '' });
+      onClose();
     } catch (error) {
-      console.error('Error uploading file:', error.response?.data || error.message);
+      console.error('Error uploading file:', error);
+      setError(
+        error.response?.data?.message || 
+        'Failed to upload file. Please try again.'
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -29,6 +50,11 @@ const DynamicUploadDialog = ({ open, onClose, clickedButton, projectId }) => {
           ✖
         </button>
         <h2 style={styles.title}>Upload from {clickedButton}</h2>
+        {error && (
+          <div style={styles.error}>
+            {error}
+          </div>
+        )}
         <form onSubmit={handleSubmit} style={styles.form}>
           <div style={styles.inputGroup}>
             <label style={styles.label}>Name:</label>
@@ -51,8 +77,12 @@ const DynamicUploadDialog = ({ open, onClose, clickedButton, projectId }) => {
               required
             ></textarea>
           </div>
-          <button type="submit" style={styles.uploadButton}>
-            Upload
+          <button 
+            type="submit" 
+            style={styles.uploadButton}
+            disabled={loading}
+          >
+            {loading ? 'Uploading...' : 'Upload'}
           </button>
         </form>
       </div>
@@ -126,6 +156,10 @@ const styles = {
     borderRadius: '4px',
     cursor: 'pointer',
     alignSelf: 'center',
+  },
+  error: {
+    color: 'red',
+    marginBottom: '10px',
   },
 };
 

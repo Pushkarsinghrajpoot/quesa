@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import CreateProjectModal from './CreateProjectModal';
 
 const ProjectsList = () => {
   const [projects, setProjects] = useState([]);
@@ -21,7 +22,7 @@ const ProjectsList = () => {
       }
 
       try {
-        const response = await fetch(`https://quesa-backend.onrender.com/api/projects?userId=${userId}`);
+        const response = await fetch(`http://localhost:5000/api/projects?userId=${userId}`);
         if (!response.ok) {
           const errorResponse = await response.json();
           throw new Error(errorResponse.error || 'Failed to fetch projects');
@@ -56,7 +57,7 @@ const ProjectsList = () => {
     }
 
     try {
-      const response = await fetch('https://quesa-backend.onrender.com/api/projects', {
+      const response = await fetch('http://localhost:5000/api/projects', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -180,76 +181,29 @@ const ProjectsList = () => {
 
       {/* Modal for Creating a New Project */}
       {isModalOpen && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 1000,
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: '#ffffff',
-              padding: '20px',
-              borderRadius: '12px',
-              width: '400px',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-            }}
-          >
-            <h2 style={{ fontSize: '20px', color: '#8B5CF6', marginBottom: '16px' }}>Create New Project</h2>
-            <input
-              type="text"
-              placeholder="Enter project name"
-              value={newProjectName}
-              onChange={(e) => setNewProjectName(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '10px',
-                borderRadius: '8px',
-                border: '1px solid #E5E7EB',
-                marginBottom: '16px',
-                fontSize: '14px',
-              }}
-            />
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <button
-                onClick={closeModal}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: '#E5E7EB',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleCreateProject}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: '#8B5CF6',
-                  color: '#ffffff',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                }}
-              >
-                Create
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+  <div
+    style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 999
+    }}
+  >
+    <CreateProjectModal 
+      onClose={closeModal}
+      fromProjectList={true}
+    />
+  </div>
+)}
     </div>
   );
 };
 
 export default ProjectsList;
+

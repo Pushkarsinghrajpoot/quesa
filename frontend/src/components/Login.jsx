@@ -6,6 +6,7 @@ const Login = () => {
     const [username, setUsername] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+
     const navigate = useNavigate();
   
     // Handle login/register
@@ -15,7 +16,7 @@ const Login = () => {
       setError(""); // Reset error message
   
       try {
-        const response = await axios.post("https://quesa-backend.onrender.com/api/users", { username });
+        const response = await axios.post("http://localhost:5000/api/users", { username });
         const userId = response.data._id;
 
         // Save userId to localStorage

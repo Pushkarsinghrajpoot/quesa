@@ -1,12 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import CreateProjectModal from './CreateProjectModal';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
 
   // Handle "Create New Project" Button Click
   const handleCreateProject = () => {
-    navigate("/create-project"); // Redirect to the Create Project page
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
   };
 
   return (
@@ -146,7 +152,7 @@ const Dashboard = () => {
             fontSize: "16px",
             marginTop: "20px",
           }}
-          onClick={handleCreateProject} // Add button functionality
+          onClick={handleCreateProject}
         >
           <span
             style={{
@@ -157,6 +163,27 @@ const Dashboard = () => {
           </span>
           Create New Project
         </button>
+
+        {/* Modal */}
+        {showModal && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 999
+          }}>
+            <CreateProjectModal 
+              onClose={handleCloseModal}
+              fromProjectList={false}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

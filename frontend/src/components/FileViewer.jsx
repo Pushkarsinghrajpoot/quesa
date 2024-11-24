@@ -8,18 +8,27 @@ const FileViewer = ({ fileId, onClose }) => {
   const [editedTranscript, setEditedTranscript] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
   const projectId = localStorage.getItem('projectId');
 
   useEffect(() => {
     const fetchFile = async () => {
+      if (!fileId) {
+        console.error('File ID is missing:', fileId);
+        setError('File ID is missing');
+        setLoading(false);
+        return;
+      }
+
       try {
-        const response = await axios.get(`https://quesa-backend.onrender.com/api/files/${fileId}`);
+        console.log('Fetching file with ID:', fileId);
+        const response = await axios.get(`http://localhost:5000/api/project/files/${fileId}`);
+        console.log('File data received:', response.data);
         setFile(response.data);
         setEditedTranscript(response.data.transcript);
         setLoading(false);
       } catch (err) {
-        setError('Failed to fetch file');
+        console.error('Error fetching file:', err);
+        setError(err.response?.data?.error || 'Failed to fetch file');
         setLoading(false);
       }
     };
@@ -29,17 +38,26 @@ const FileViewer = ({ fileId, onClose }) => {
 
   const handleSave = async () => {
     try {
-      await axios.put(`https://quesa-backend.onrender.com/api/files/${fileId}`, {
+      await axios.put(`http://localhost:5000/api/project/files/${fileId}`, {
         transcript: editedTranscript
       });
-      navigate(`/podcast/${projectId}`);
+      // Update the local file state
+      setFile(prev => ({
+        ...prev,
+        transcript: editedTranscript
+      }));
+      setIsEditing(false);
+      // Close the viewer after saving
+      onClose();
     } catch (err) {
       setError('Failed to save changes');
     }
   };
 
   const handleDiscard = () => {
-    navigate(`/podcast/${projectId}`);
+    // Reset the edited transcript to original
+    setEditedTranscript(file.transcript);
+    setIsEditing(false);
   };
 
   if (loading) return <div>Loading...</div>;
@@ -69,25 +87,39 @@ const FileViewer = ({ fileId, onClose }) => {
         position: 'sticky',
         top: 0,
         backgroundColor: 'white',
-        padding: '10px 0',
-        borderBottom: '1px solid #eee'
+        zIndex: 1
       }}>
-        <h2 style={{ margin: 0 }}>{file.name}</h2>
+        <h2 style={{ margin: 0 }}>{file?.name}</h2>
         <div style={{ display: 'flex', gap: '12px' }}>
           {!isEditing ? (
-            <button
-              onClick={() => setIsEditing(true)}
-              style={{
-                padding: '8px 16px',
-                backgroundColor: '#8B5CF6',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer'
-              }}
-            >
-              Edit
-            </button>
+            <>
+              <button
+                onClick={() => setIsEditing(true)}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#8B5CF6',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer'
+                }}
+              >
+                Edit
+              </button>
+              <button
+                onClick={onClose}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#EF4444',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer'
+                }}
+              >
+                Close
+              </button>
+            </>
           ) : (
             <>
               <button
@@ -153,4 +185,4 @@ const FileViewer = ({ fileId, onClose }) => {
   );
 };
 
-export default FileViewer; 
+export default FileViewer;
