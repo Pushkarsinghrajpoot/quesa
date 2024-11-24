@@ -50,32 +50,9 @@ const ProjectsList = () => {
   };
 
   // Handle creating a new project
-  const handleCreateProject = async () => {
-    if (!newProjectName.trim()) {
-      alert('Project name cannot be empty!');
-      return;
-    }
-
-    try {
-      const response = await fetch('https://quesa-backend.onrender.com/api/projects', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: newProjectName, userId }),
-      });
-
-      if (!response.ok) {
-        const errorResponse = await response.json();
-        throw new Error(errorResponse.error || 'Failed to create project');
-      }
-
-      const newProject = await response.json();
-      setProjects([...projects, newProject]);
-      closeModal();
-    } catch (err) {
-      alert(`Error creating project: ${err.message}`);
-    }
+  const handleCreateProject = async (newProject) => {
+    setProjects((prevProjects) => [...prevProjects, newProject]); // Update the projects state
+    closeModal(); // Close the modal
   };
 
   // Render loading or error state
@@ -181,26 +158,27 @@ const ProjectsList = () => {
 
       {/* Modal for Creating a New Project */}
       {isModalOpen && (
-  <div
-    style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      zIndex: 999
-    }}
-  >
-    <CreateProjectModal 
-      onClose={closeModal}
-      fromProjectList={true}
-    />
-  </div>
-)}
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 999
+          }}
+        >
+          <CreateProjectModal 
+            onClose={closeModal}
+            onProjectCreated={handleCreateProject} // Pass the handler here
+            fromProjectList={true}
+          />
+        </div>
+      )}
     </div>
   );
 };
