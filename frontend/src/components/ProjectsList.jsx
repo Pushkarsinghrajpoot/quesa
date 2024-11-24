@@ -115,7 +115,7 @@ const ProjectsList = () => {
                 transition: 'transform 0.2s, box-shadow 0.2s',
                 boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
               }}
-              onClick={() => navigate(`/podcast/${project.id}`, { state: { projectName: project.name } })}
+              onClick={() => navigate(`/podcast/${project._id}`, { state: { projectName: project.name } })}
               onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.03)')}
               onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
             >

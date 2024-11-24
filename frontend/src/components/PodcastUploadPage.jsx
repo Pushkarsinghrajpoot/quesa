@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import FileViewer from './FileViewer';
 import DynamicUploadDialog from './DynamicUploadDialog';
 import axios from 'axios';
 const PodcastUploadPage = () => {
+    const { projectId } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
     const projectName = location.state?.projectName || 'Sample Project';
@@ -21,7 +22,6 @@ const PodcastUploadPage = () => {
     const [selectedUploadType, setSelectedUploadType] = useState('');
 
     const userId = localStorage.getItem('userId');
-    const projectId = localStorage.getItem("projectId");
 
     
 
@@ -42,10 +42,10 @@ const PodcastUploadPage = () => {
     };
 
     useEffect(() => {
-      if (projectId) {
-          fetchFiles();
-      }
-  }, [projectId]);
+        if (projectId) {
+            fetchFiles();
+        }
+    }, [projectId]);
 
     const fetchFiles = async () => {
         try {
