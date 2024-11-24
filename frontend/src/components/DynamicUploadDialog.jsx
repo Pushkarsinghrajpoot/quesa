@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const DynamicUploadDialog = ({ open, onClose, clickedButton, projectId }) => {
+const DynamicUploadDialog = ({ open, onClose, projectId, uploadType }) => {
   const [formData, setFormData] = useState({ name: '', transcript: '' });
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -14,30 +14,27 @@ const DynamicUploadDialog = ({ open, onClose, clickedButton, projectId }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    setLoading(true);
+    setIsLoading(true);
 
     try {
+      console.log('Submitting with projectId:', projectId);
+      
       const response = await axios.post(
-        `https://quesa-backend.onrender.com/api/projects/${projectId}/files`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
+        `https://quesa-backend.onrender.com/api/project/${projectId}/files`,
+        formData
       );
 
-      console.log('File uploaded:', response.data);
+      console.log('File uploaded successfully:', response.data);
       setFormData({ name: '', transcript: '' });
       onClose();
     } catch (error) {
-      console.error('Error uploading file:', error);
+      console.error('Upload error:', error);
       setError(
-        error.response?.data?.message || 
+        error.response?.data?.error || 
         'Failed to upload file. Please try again.'
       );
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -49,9 +46,9 @@ const DynamicUploadDialog = ({ open, onClose, clickedButton, projectId }) => {
         <button style={styles.closeButton} onClick={onClose}>
           ✖
         </button>
-        <h2 style={styles.title}>Upload from {clickedButton}</h2>
+        <h2 style={styles.title}>Upload from {uploadType}</h2>
         {error && (
-          <div style={styles.error}>
+          <div style={styles.errorMessage}>
             {error}
           </div>
         )}
@@ -80,9 +77,9 @@ const DynamicUploadDialog = ({ open, onClose, clickedButton, projectId }) => {
           <button 
             type="submit" 
             style={styles.uploadButton}
-            disabled={loading}
+            disabled={isLoading}
           >
-            {loading ? 'Uploading...' : 'Upload'}
+            {isLoading ? 'Uploading...' : 'Upload'}
           </button>
         </form>
       </div>
@@ -156,10 +153,23 @@ const styles = {
     borderRadius: '4px',
     cursor: 'pointer',
     alignSelf: 'center',
+    transition: 'background-color 0.3s',
+    '&:disabled': {
+      backgroundColor: '#9CA3AF',
+      cursor: 'not-allowed',
+    },
+    '&:hover:not(:disabled)': {
+      backgroundColor: '#3B9E40',
+    },
   },
-  error: {
-    color: 'red',
-    marginBottom: '10px',
+  errorMessage: {
+    backgroundColor: '#FEE2E2',
+    color: '#DC2626',
+    padding: '12px',
+    borderRadius: '6px',
+    marginBottom: '16px',
+    fontSize: '14px',
+    border: '1px solid #FCA5A5',
   },
 };
 
